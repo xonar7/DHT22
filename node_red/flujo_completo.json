@@ -1,0 +1,168 @@
+[
+    {
+        "id": "flow_dht22",
+        "type": "tab",
+        "label": "TTN DHT22",
+        "disabled": false,
+        "info": "Dashboard para sensor DHT22 (temperatura + humedad) vía LoRaWAN"
+    },
+    {
+        "id": "mqtt_in_dht22",
+        "type": "mqtt in",
+        "z": "flow_dht22",
+        "name": "TTN Uplink DHT22",
+        "topic": "v3/dht22ap@ttn/devices/dht22ed/up",
+        "qos": "0",
+        "datatype": "auto-detect",
+        "broker": "broker_ttn_dht22",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 130,
+        "y": 80,
+        "wires": [
+            [
+                "function_extract_data"
+            ]
+        ]
+    },
+    {
+        "id": "function_extract_data",
+        "type": "function",
+        "z": "flow_dht22",
+        "name": "Extraer Temp & Hum",
+        "func": "// Extraer datos del mensaje de TTN\nvar decoded = msg.payload.uplink_message.decoded_payload;\n\n// Temperatura\nvar temp = decoded.temperature;\nvar tempValid = decoded.temperature_valid;\n\n// Humedad\nvar hum = decoded.humidity;\nvar humValid = decoded.humidity_valid;\n\n// Crear mensajes separados para cada gauge\nvar msg1 = {\n    payload: tempValid ? temp : null,\n    topic: \"temperature\"\n};\n\nvar msg2 = {\n    payload: humValid ? hum : null,\n    topic: \"humidity\"\n};\n\n// Mostrar en el estado del nodo\nnode.status({\n    fill: \"green\",\n    shape: \"dot\",\n    text: \"T:\" + (tempValid ? temp + \"°C\" : \"ERR\") + \" | H:\" + (humValid ? hum + \"%\" : \"ERR\")\n});\n\nreturn [msg1, msg2];",
+        "outputs": 2,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 370,
+        "y": 80,
+        "wires": [
+            [
+                "gauge_temperature"
+            ],
+            [
+                "gauge_humidity"
+            ]
+        ]
+    },
+    {
+        "id": "gauge_temperature",
+        "type": "ui_gauge",
+        "z": "flow_dht22",
+        "name": "Temperatura",
+        "group": "group_dht22",
+        "order": 1,
+        "width": "6",
+        "height": "4",
+        "gtype": "gage",
+        "title": "Temperatura",
+        "label": "°C",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "40",
+        "colors": [
+            "#0095e8",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 630,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "gauge_humidity",
+        "type": "ui_gauge",
+        "z": "flow_dht22",
+        "name": "Humedad",
+        "group": "group_dht22",
+        "order": 2,
+        "width": "6",
+        "height": "4",
+        "gtype": "gage",
+        "title": "Humedad",
+        "label": "%",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#ca3838",
+            "#00b500",
+            "#0095e8"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 620,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "broker_ttn_dht22",
+        "type": "mqtt-broker",
+        "name": "TTN MQTT Broker",
+        "broker": "nam1.cloud.thethings.network",
+        "port": "8883",
+        "tls": "",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": true,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "group_dht22",
+        "type": "ui_group",
+        "name": "Sensor DHT22",
+        "tab": "tab_home",
+        "order": 1,
+        "disp": true,
+        "width": "24",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "tab_home",
+        "type": "ui_tab",
+        "name": "Home",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "45f7b48021bdd96e",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-dashboard": "3.6.6"
+        }
+    }
+]
