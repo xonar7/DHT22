@@ -5,7 +5,7 @@ Los datos se envían a través de LoRaWAN a The Things Network (TTN) y se visual
 
 ## Hardware utilizado
 * Placa: TTGO LoRa32 (ESP32)
-* Sensor: DHT22 / AM2302
+* Sensor: DHT22
 
 ## Carpetas del proyecto
 * `src`: Código fuente del firmware (C++).
